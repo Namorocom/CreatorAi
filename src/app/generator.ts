@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink, ActivatedRoute } from '@angular/router';
@@ -49,10 +50,10 @@ interface GeneratedContent {
       <!-- Progress -->
       <div class="flex items-center justify-between text-xs font-medium text-purple-400 tracking-wider uppercase mb-2">
         <span>{{ i18n.t().configuration }}</span>
-        <span class="text-gray-500">{{ i18n.t().step1of2 }}</span>
+        <span class="text-gray-500">{{ stepText() }}</span>
       </div>
       <div class="w-full h-1.5 bg-gray-800 rounded-full mb-8 overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-purple-500 to-purple-400 w-1/2 rounded-full"></div>
+        <div class="h-full bg-gradient-to-r from-purple-500 to-purple-400 rounded-full transition-all duration-500 ease-out" [style.width]="progressWidth()"></div>
       </div>
 
       <!-- Form -->
@@ -171,6 +172,27 @@ export class GeneratorComponent {
   isMenuOpen = signal(false);
   activeTab = signal<'short' | 'long'>('short');
   result = signal<GeneratedContent | null>(null);
+
+  formValue = toSignal(this.form.valueChanges, { initialValue: this.form.value });
+
+  currentStep = computed(() => {
+    const val = this.formValue();
+    if (val.topic && val.audience) return 2;
+    if (val.topic || val.audience) return 1.5;
+    return 1;
+  });
+
+  progressWidth = computed(() => {
+    const step = this.currentStep();
+    if (step === 2) return '100%';
+    if (step === 1.5) return '75%';
+    return '50%';
+  });
+
+  stepText = computed(() => {
+    const step = Math.floor(this.currentStep());
+    return this.i18n.lang() === 'pt' ? `PASSO ${step} DE 2` : `STEP ${step} OF 2`;
+  });
 
   constructor() {
     this.route.queryParams.subscribe(params => {

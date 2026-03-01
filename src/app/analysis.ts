@@ -22,24 +22,24 @@ import { TranslationService } from './translation.service';
         <!-- Share Menu -->
         @if (isShareMenuOpen()) {
           <div class="absolute right-0 top-10 w-56 bg-[#1A1625] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
-            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+            <button (click)="share('facebook')" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
               <mat-icon class="text-[18px] w-[18px] h-[18px] text-blue-500">facebook</mat-icon>
               Facebook
             </button>
-            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+            <button (click)="share('whatsapp')" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
               <mat-icon class="text-[18px] w-[18px] h-[18px] text-green-500">chat</mat-icon>
               WhatsApp
             </button>
-            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+            <button (click)="share('instagram')" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
               <mat-icon class="text-[18px] w-[18px] h-[18px] text-pink-500">camera_alt</mat-icon>
               Instagram
             </button>
             <div class="h-px bg-white/10 my-1"></div>
-            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+            <button (click)="share('quickshare')" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
               <mat-icon class="text-[18px] w-[18px] h-[18px] text-purple-400">bolt</mat-icon>
               {{ i18n.lang() === 'pt' ? 'Partilha Rápida' : 'Quick Share' }}
             </button>
-            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+            <button (click)="share('bluetooth')" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
               <mat-icon class="text-[18px] w-[18px] h-[18px] text-blue-400">bluetooth</mat-icon>
               Bluetooth
             </button>
@@ -187,4 +187,51 @@ import { TranslationService } from './translation.service';
 export class AnalysisComponent {
   i18n = inject(TranslationService);
   isShareMenuOpen = signal(false);
+
+  async share(platform: string) {
+    this.isShareMenuOpen.set(false);
+    
+    const isPt = this.i18n.lang() === 'pt';
+    const title = isPt ? 'Minha Análise de Engajamento' : 'My Engagement Analysis';
+    const text = isPt 
+      ? `📊 Análise de Engajamento\nPotencial: 88/100\nQualidade: 94/100\nPrevisão: 2.4k alcance\nMelhor horário: Hoje às 6:45 PM`
+      : `📊 Engagement Analysis\nPotential: 88/100\nQuality: 94/100\nForecast: 2.4k reach\nBest time: Today at 6:45 PM`;
+    const shareUrl = window.location.href;
+
+    if (platform === 'quickshare' || platform === 'bluetooth') {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: title,
+            text: text,
+            url: shareUrl
+          });
+        } catch (err) {
+          console.error('Error sharing', err);
+        }
+      } else {
+        alert(isPt ? 'Compartilhamento nativo não suportado neste navegador.' : 'Native sharing not supported in this browser.');
+      }
+      return;
+    }
+
+    let url = '';
+    switch (platform) {
+      case 'facebook':
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(text)}`;
+        break;
+      case 'whatsapp':
+        url = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + '\n\n' + shareUrl)}`;
+        break;
+      case 'instagram':
+        navigator.clipboard.writeText(text + '\n\n' + shareUrl);
+        alert(isPt ? 'Texto e link copiados! Abra o Instagram para colar e compartilhar.' : 'Text and link copied! Open Instagram to paste and share.');
+        url = 'https://instagram.com';
+        break;
+    }
+
+    if (url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  }
 }

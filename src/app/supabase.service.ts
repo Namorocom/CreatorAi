@@ -19,6 +19,10 @@ export class SupabaseService {
     }
   }
 
+  get isConfigured(): boolean {
+    return this.supabase !== null;
+  }
+
   async signUp(email: string, password: string, metadata: Record<string, unknown>) {
     if (!this.supabase) throw new Error('Supabase not configured');
     return this.supabase.auth.signUp({
@@ -45,7 +49,12 @@ export class SupabaseService {
 
   async getSession() {
     if (!this.supabase) return { data: { session: null }, error: null };
-    return this.supabase.auth.getSession();
+    try {
+      return await this.supabase.auth.getSession();
+    } catch (error) {
+      console.error('Error getting session:', error);
+      return { data: { session: null }, error };
+    }
   }
 
   onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
@@ -56,10 +65,24 @@ export class SupabaseService {
   }
 
   async updateProfile(metadata: Record<string, unknown>) {
-    if (!this.supabase) throw new Error('Supabase not configured');
-    return this.supabase.auth.updateUser({
-      data: metadata
-    });
+    if (!this.supabase) {
+      return this.updateLocalProfile(metadata);
+    }
+    try {
+      return await this.supabase.auth.updateUser({
+        data: metadata
+      });
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      return this.updateLocalProfile(metadata);
+    }
+  }
+
+  private updateLocalProfile(metadata: Record<string, unknown>) {
+    const localProfile = JSON.parse(localStorage.getItem('creatorai_profile') || '{}');
+    const updatedProfile = { ...localProfile, ...metadata };
+    localStorage.setItem('creatorai_profile', JSON.stringify(updatedProfile));
+    return { data: { user: { user_metadata: updatedProfile } }, error: null };
   }
 
   async uploadAvatar(file: File) {

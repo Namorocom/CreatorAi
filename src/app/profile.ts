@@ -36,11 +36,14 @@ interface HistoryItem {
 
       <!-- Profile Info -->
       <div class="flex flex-col items-center mb-8">
-        <div class="relative mb-4">
-          <div class="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-purple-500 to-pink-500">
+        <div class="relative mb-4 cursor-pointer group" (click)="fileInput.click()" (keydown.enter)="fileInput.click()" tabindex="0" role="button" aria-label="Change profile picture">
+          <div class="w-24 h-24 rounded-full p-1 bg-gradient-to-br from-purple-500 to-pink-500 transition-transform group-hover:scale-105">
             <img [src]="avatarUrl()" alt="Avatar" referrerpolicy="no-referrer" class="w-full h-full rounded-full object-cover border-4 border-[#120F1A]" />
+            <div class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center m-1">
+              <mat-icon class="text-white">photo_camera</mat-icon>
+            </div>
           </div>
-          <button (click)="fileInput.click()" class="absolute bottom-0 right-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center border-2 border-[#120F1A] shadow-lg hover:bg-purple-500 transition-colors">
+          <button class="absolute bottom-0 right-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center border-2 border-[#120F1A] shadow-lg hover:bg-purple-500 transition-colors z-10" aria-hidden="true" tabindex="-1">
             <mat-icon class="text-white text-[16px] w-4 h-4">edit</mat-icon>
             @if (isUploading()) {
               <mat-icon class="text-white text-[16px] w-4 h-4 animate-spin absolute">sync</mat-icon>
@@ -157,6 +160,12 @@ export class ProfileComponent implements OnInit {
       this.userName.set(session.user.user_metadata?.['full_name'] || 'User');
       if (session.user.user_metadata?.['avatar_url']) {
         this.avatarUrl.set(session.user.user_metadata['avatar_url']);
+      }
+    } else {
+      // Fallback to localStorage
+      const localProfile = JSON.parse(localStorage.getItem('creatorai_profile') || '{}');
+      if (localProfile.avatar_url) {
+        this.avatarUrl.set(localProfile.avatar_url);
       }
     }
 

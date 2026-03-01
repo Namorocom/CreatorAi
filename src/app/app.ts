@@ -65,14 +65,19 @@ export class App {
     });
 
     // Check auth status
-    this.supabase.getSession().then(({ data: { session } }) => {
-      if (!session && !this.isAuthPage()) {
+    this.supabase.getSession().then(({ data: { session }, error }) => {
+      // If error is present, it means fetch failed (invalid URL), so we fallback to local mode
+      // If session is null and no error, but supabase is not configured, we also fallback to local mode
+      const isLocalMode = !this.supabase.isConfigured || error;
+      
+      if (!session && !this.isAuthPage() && !isLocalMode) {
         this.router.navigate(['/login']);
       }
     });
 
     this.supabase.onAuthStateChange((_event, session) => {
-      if (!session && !this.isAuthPage()) {
+      const isLocalMode = !this.supabase.isConfigured;
+      if (!session && !this.isAuthPage() && !isLocalMode) {
         this.router.navigate(['/login']);
       } else if (session && this.isAuthPage()) {
         this.router.navigate(['/']);

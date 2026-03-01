@@ -49,26 +49,32 @@ import { TranslationService } from './translation.service';
 
       <!-- Chart Card -->
       <div class="bg-[#1A1625] border border-white/5 rounded-2xl p-6 mb-6">
-        <div class="flex justify-between items-start mb-6">
-          <div>
-            <h3 class="text-lg font-semibold mb-1">{{ i18n.t().engagementForecast }}</h3>
-            <p class="text-sm text-gray-400">{{ i18n.t().projectedInteractions }}</p>
+        <div class="flex justify-between items-start mb-8">
+          <div class="max-w-[65%]">
+            <h3 class="text-lg font-bold mb-1 text-white">{{ i18n.t().engagementForecast }}</h3>
+            <p class="text-sm text-gray-400 leading-snug">{{ i18n.t().projectedInteractions }}</p>
           </div>
-          <div class="text-right">
-            <span class="text-2xl font-bold">2.4k</span>
-            <p class="text-[10px] font-bold text-gray-500 tracking-widest uppercase">{{ i18n.t().estimatedReach }}</p>
+          <div class="text-right flex flex-col items-end shrink-0">
+            <span class="text-3xl font-bold text-white mb-1 leading-none">2.4k</span>
+            <p class="text-[10px] font-medium text-gray-400 tracking-widest uppercase text-right w-24 leading-tight">{{ i18n.t().estimatedReach }}</p>
           </div>
         </div>
         
         <!-- Mock Chart -->
-        <div class="h-40 w-full relative mb-4 flex items-end">
-          <svg viewBox="0 0 100 40" class="w-full h-full preserve-aspect-ratio-none stroke-purple-500 stroke-[1.5] fill-none">
-            <path d="M0,30 Q5,10 10,15 T20,25 T30,10 T40,28 T50,18 T60,35 T70,5 T80,25 T90,10 T100,15" />
+        <div class="h-40 w-full relative mb-4">
+          <svg viewBox="0 0 100 50" class="w-full h-full preserve-aspect-ratio-none overflow-visible">
+            <defs>
+              <linearGradient id="chart-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(168, 85, 247, 0.2)" />
+                <stop offset="100%" stop-color="rgba(168, 85, 247, 0)" />
+              </linearGradient>
+            </defs>
+            <path d="M0,40 C2,40 4,15 7,15 C10,15 12,20 15,20 C18,20 20,35 22,35 C24,35 26,18 29,18 C32,18 34,35 36,35 C38,35 40,25 43,25 C46,25 48,18 51,18 C54,18 56,38 58,38 C60,38 62,45 65,45 C68,45 70,10 73,10 C76,10 78,30 81,30 C84,30 86,40 88,40 C90,40 92,15 95,15 L100,15 L100,50 L0,50 Z" fill="url(#chart-gradient)" />
+            <path d="M0,40 C2,40 4,15 7,15 C10,15 12,20 15,20 C18,20 20,35 22,35 C24,35 26,18 29,18 C32,18 34,35 36,35 C38,35 40,25 43,25 C46,25 48,18 51,18 C54,18 56,38 58,38 C60,38 62,45 65,45 C68,45 70,10 73,10 C76,10 78,30 81,30 C84,30 86,40 88,40 C90,40 92,15 95,15 L100,15" class="stroke-[#A855F7] stroke-[2.5] fill-none" style="filter: drop-shadow(0 0 6px rgba(168,85,247,0.5)); stroke-linecap: round; stroke-linejoin: round;" />
           </svg>
-          <div class="absolute bottom-0 left-0 w-full h-full bg-gradient-to-t from-purple-500/20 to-transparent pointer-events-none" style="clip-path: polygon(0 30%, 10% 15%, 20% 25%, 30% 10%, 40% 28%, 50% 18%, 60% 35%, 70% 5%, 80% 25%, 90% 10%, 100% 15%, 100% 100%, 0 100%);"></div>
         </div>
         
-        <div class="flex justify-between text-xs font-bold text-gray-500 tracking-widest uppercase">
+        <div class="flex justify-between text-xs font-bold text-gray-300 tracking-widest uppercase px-1">
           <span>6AM</span>
           <span>12PM</span>
           <span>6PM</span>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslationService } from './translation.service';
@@ -10,14 +10,41 @@ import { TranslationService } from './translation.service';
   template: `
     <div class="p-6 pb-24 min-h-screen bg-[#120F1A] text-white">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center justify-between mb-8 relative">
         <button routerLink="/" class="text-gray-400 hover:text-white transition-colors">
           <mat-icon>arrow_back</mat-icon>
         </button>
         <h1 class="text-xl font-semibold tracking-tight">{{ i18n.t().analysisGrowth }}</h1>
-        <button class="text-gray-400 hover:text-white transition-colors">
+        <button (click)="isShareMenuOpen.set(!isShareMenuOpen())" class="text-gray-400 hover:text-white transition-colors">
           <mat-icon>share</mat-icon>
         </button>
+
+        <!-- Share Menu -->
+        @if (isShareMenuOpen()) {
+          <div class="absolute right-0 top-10 w-56 bg-[#1A1625] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+              <mat-icon class="text-[18px] w-[18px] h-[18px] text-blue-500">facebook</mat-icon>
+              Facebook
+            </button>
+            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+              <mat-icon class="text-[18px] w-[18px] h-[18px] text-green-500">chat</mat-icon>
+              WhatsApp
+            </button>
+            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+              <mat-icon class="text-[18px] w-[18px] h-[18px] text-pink-500">camera_alt</mat-icon>
+              Instagram
+            </button>
+            <div class="h-px bg-white/10 my-1"></div>
+            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+              <mat-icon class="text-[18px] w-[18px] h-[18px] text-purple-400">bolt</mat-icon>
+              {{ i18n.lang() === 'pt' ? 'Partilha Rápida' : 'Quick Share' }}
+            </button>
+            <button class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-3">
+              <mat-icon class="text-[18px] w-[18px] h-[18px] text-blue-400">bluetooth</mat-icon>
+              Bluetooth
+            </button>
+          </div>
+        }
       </div>
 
       <!-- Top Stats -->
@@ -159,4 +186,5 @@ import { TranslationService } from './translation.service';
 })
 export class AnalysisComponent {
   i18n = inject(TranslationService);
+  isShareMenuOpen = signal(false);
 }

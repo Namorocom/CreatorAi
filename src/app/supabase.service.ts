@@ -64,23 +64,28 @@ export class SupabaseService {
   }
 
   async saveHistory(data: { title: string; longText: string; type?: string | null }) {
+    const historyItem = { 
+      id: Math.random().toString(36).substring(2, 9),
+      title: data.title,
+      content: data.longText,
+      type: data.type || 'post',
+      created_at: new Date().toISOString()
+    };
+
     try {
       const { data: result, error } = await this.supabase
         .from('history')
-        .insert([
-          { 
-            title: data.title,
-            content: data.longText,
-            type: data.type || 'post',
-            created_at: new Date().toISOString()
-          }
-        ]);
+        .insert([historyItem]);
       
       if (error) throw error;
       return result;
     } catch (error) {
-      console.error('Error saving to Supabase:', error);
-      return null;
+      console.error('Error saving to Supabase, falling back to localStorage:', error);
+      // Fallback to localStorage
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      localHistory.unshift(historyItem);
+      localStorage.setItem('creatorai_history', JSON.stringify(localHistory));
+      return [historyItem];
     }
   }
 
@@ -96,8 +101,9 @@ export class SupabaseService {
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error fetching from Supabase:', error);
-      return [];
+      console.error('Error fetching from Supabase, using localStorage:', error);
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      return localHistory.filter((item: { type: string }) => item.type !== 'search').slice(0, 10);
     }
   }
 
@@ -116,29 +122,38 @@ export class SupabaseService {
       if (error) throw error;
       return data;
     } catch (error) {
-      console.error('Error searching history:', error);
-      return [];
+      console.error('Error searching history, using localStorage:', error);
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      const lowerQuery = query.toLowerCase();
+      return localHistory
+        .filter((item: { type: string; title: string; content: string }) => item.type !== 'search' && 
+          (item.title.toLowerCase().includes(lowerQuery) || item.content.toLowerCase().includes(lowerQuery)))
+        .slice(0, 20);
     }
   }
 
   async saveSearchQuery(query: string) {
+    const searchItem = { 
+      id: Math.random().toString(36).substring(2, 9),
+      title: query,
+      content: 'Search Query',
+      type: 'search',
+      created_at: new Date().toISOString()
+    };
+
     try {
       const { data: result, error } = await this.supabase
         .from('history')
-        .insert([
-          { 
-            title: query,
-            content: 'Search Query',
-            type: 'search',
-            created_at: new Date().toISOString()
-          }
-        ]);
+        .insert([searchItem]);
       
       if (error) throw error;
       return result;
     } catch (error) {
-      console.error('Error saving search query:', error);
-      return null;
+      console.error('Error saving search query, falling back to localStorage:', error);
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      localHistory.unshift(searchItem);
+      localStorage.setItem('creatorai_history', JSON.stringify(localHistory));
+      return [searchItem];
     }
   }
 }

@@ -143,8 +143,8 @@ export class ProfileComponent implements OnInit {
   i18n = inject(TranslationService);
   
   history = signal<HistoryItem[]>([]);
-  userName = signal<string>('Alex Creator');
-  userEmail = signal<string>('@alex_creatorai');
+  userName = signal<string>('');
+  userEmail = signal<string>('');
   avatarUrl = signal<string>('https://picsum.photos/seed/avatar/200/200');
   isUploading = signal(false);
 

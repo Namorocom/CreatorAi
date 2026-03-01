@@ -46,19 +46,19 @@ interface GeneratedContent {
         <div>
           <label for="topic" class="block text-sm font-medium text-gray-300 mb-2">{{ i18n.t().topic }}</label>
           <input id="topic" type="text" formControlName="topic" placeholder="e.g. Benefits of AI in Design" 
-                 class="w-full bg-[#1A1625] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all">
+                 class="w-full h-14 bg-[#1A1625] border border-white/10 rounded-xl px-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all">
         </div>
 
         <div>
           <label for="audience" class="block text-sm font-medium text-gray-300 mb-2">{{ i18n.t().targetAudience }}</label>
           <input id="audience" type="text" formControlName="audience" placeholder="e.g. Graphic Designers" 
-                 class="w-full bg-[#1A1625] border border-white/10 rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all">
+                 class="w-full h-14 bg-[#1A1625] border border-white/10 rounded-xl px-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all">
         </div>
 
         <div>
           <label for="goal" class="block text-sm font-medium text-gray-300 mb-2">{{ i18n.t().contentGoal }}</label>
           <div class="relative">
-            <select id="goal" formControlName="goal" class="w-full bg-[#1A1625] border border-white/10 rounded-xl px-4 py-3.5 text-white appearance-none focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all">
+            <select id="goal" formControlName="goal" class="w-full h-14 bg-[#1A1625] border border-white/10 rounded-xl px-4 text-white appearance-none focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all">
               <option value="Educate & Inform">Educate & Inform</option>
               <option value="Entertain">Entertain</option>
               <option value="Inspire">Inspire</option>

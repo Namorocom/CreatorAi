@@ -5,13 +5,22 @@ import { createClient, SupabaseClient, AuthChangeEvent, Session } from '@supabas
   providedIn: 'root'
 })
 export class SupabaseService {
-  private supabase: SupabaseClient;
+  private supabase: SupabaseClient | null = null;
 
   constructor() {
-    this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    if (typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL && typeof SUPABASE_ANON_KEY !== 'undefined' && SUPABASE_ANON_KEY) {
+      try {
+        this.supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (e) {
+        console.warn('Failed to initialize Supabase client:', e);
+      }
+    } else {
+      console.warn('Supabase credentials missing. Running in local-only mode.');
+    }
   }
 
   async signUp(email: string, password: string, metadata: Record<string, unknown>) {
+    if (!this.supabase) throw new Error('Supabase not configured');
     return this.supabase.auth.signUp({
       email,
       password,
@@ -22,6 +31,7 @@ export class SupabaseService {
   }
 
   async signIn(email: string, password: string) {
+    if (!this.supabase) throw new Error('Supabase not configured');
     return this.supabase.auth.signInWithPassword({
       email,
       password
@@ -29,24 +39,31 @@ export class SupabaseService {
   }
 
   async signOut() {
+    if (!this.supabase) return;
     return this.supabase.auth.signOut();
   }
 
-  getSession() {
+  async getSession() {
+    if (!this.supabase) return { data: { session: null }, error: null };
     return this.supabase.auth.getSession();
   }
 
   onAuthStateChange(callback: (event: AuthChangeEvent, session: Session | null) => void) {
+    if (!this.supabase) {
+      return { data: { subscription: { unsubscribe: () => { /* noop */ } } } };
+    }
     return this.supabase.auth.onAuthStateChange(callback);
   }
 
   async updateProfile(metadata: Record<string, unknown>) {
+    if (!this.supabase) throw new Error('Supabase not configured');
     return this.supabase.auth.updateUser({
       data: metadata
     });
   }
 
   async uploadAvatar(file: File) {
+    if (!this.supabase) throw new Error('Supabase not configured');
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -72,6 +89,13 @@ export class SupabaseService {
       created_at: new Date().toISOString()
     };
 
+    if (!this.supabase) {
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      localHistory.unshift(historyItem);
+      localStorage.setItem('creatorai_history', JSON.stringify(localHistory));
+      return [historyItem];
+    }
+
     try {
       const { data: result, error } = await this.supabase
         .from('history')
@@ -90,6 +114,11 @@ export class SupabaseService {
   }
 
   async getHistory() {
+    if (!this.supabase) {
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      return localHistory.filter((item: { type: string }) => item.type !== 'search').slice(0, 10);
+    }
+
     try {
       const { data, error } = await this.supabase
         .from('history')
@@ -108,6 +137,15 @@ export class SupabaseService {
   }
 
   async searchHistory(query: string) {
+    if (!this.supabase) {
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      const lowerQuery = query.toLowerCase();
+      return localHistory
+        .filter((item: { type: string; title: string; content: string }) => item.type !== 'search' && 
+          (item.title.toLowerCase().includes(lowerQuery) || item.content.toLowerCase().includes(lowerQuery)))
+        .slice(0, 20);
+    }
+
     try {
       // Escape double quotes in the query to prevent injection
       const safeQuery = query.replace(/"/g, '""');
@@ -140,6 +178,13 @@ export class SupabaseService {
       type: 'search',
       created_at: new Date().toISOString()
     };
+
+    if (!this.supabase) {
+      const localHistory = JSON.parse(localStorage.getItem('creatorai_history') || '[]');
+      localHistory.unshift(searchItem);
+      localStorage.setItem('creatorai_history', JSON.stringify(localHistory));
+      return [searchItem];
+    }
 
     try {
       const { data: result, error } = await this.supabase

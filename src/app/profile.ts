@@ -20,14 +20,16 @@ interface HistoryItem {
     <div class="p-6 pb-24 min-h-screen bg-[#120F1A] text-white">
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
-        <h1 class="text-xl font-semibold tracking-tight">{{ i18n.t().userProfile }}</h1>
+        <div class="flex items-center gap-3">
+          <button routerLink="/" class="text-gray-400 hover:text-white transition-colors">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <h1 class="text-xl font-semibold tracking-tight">{{ i18n.t().userProfile }}</h1>
+        </div>
         <div class="flex items-center gap-3">
           <button (click)="i18n.toggle()" class="flex items-center gap-1 bg-white/10 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-white/20 transition-colors">
             <mat-icon class="text-[18px] w-[18px] h-[18px]">language</mat-icon>
             {{ i18n.lang() === 'en' ? 'PT' : 'EN' }}
-          </button>
-          <button class="text-gray-400 hover:text-white transition-colors">
-            <mat-icon>settings</mat-icon>
           </button>
         </div>
       </div>

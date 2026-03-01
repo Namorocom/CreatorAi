@@ -93,6 +93,8 @@ const DICTIONARY = {
     searchResults: 'Search Results',
     noResults: 'No results found.',
     viewDetails: 'View Details',
+    clearForm: 'Clear Form',
+    viewHistory: 'View History',
   },
   pt: {
     home: 'Início',
@@ -184,6 +186,8 @@ const DICTIONARY = {
     searchResults: 'Resultados da Busca',
     noResults: 'Nenhum resultado encontrado.',
     viewDetails: 'Ver Detalhes',
+    clearForm: 'Limpar Formulário',
+    viewHistory: 'Ver Histórico',
   }
 };
 

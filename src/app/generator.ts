@@ -22,14 +22,28 @@ interface GeneratedContent {
   template: `
     <div class="p-6 pb-24 min-h-screen bg-[#120F1A] text-white">
       <!-- Header -->
-      <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center justify-between mb-8 relative">
         <button routerLink="/" class="text-gray-400 hover:text-white transition-colors">
           <mat-icon>arrow_back</mat-icon>
         </button>
         <h1 class="text-xl font-semibold tracking-tight">{{ i18n.t().contentGenerator }}</h1>
-        <button class="text-gray-400 hover:text-white transition-colors">
+        <button (click)="isMenuOpen.set(!isMenuOpen())" class="text-gray-400 hover:text-white transition-colors">
           <mat-icon>more_vert</mat-icon>
         </button>
+
+        <!-- Dropdown Menu -->
+        @if (isMenuOpen()) {
+          <div class="absolute right-0 top-10 w-48 bg-[#1A1625] border border-white/10 rounded-xl shadow-xl overflow-hidden z-50">
+            <button (click)="clearForm(); isMenuOpen.set(false)" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2">
+              <mat-icon class="text-[18px] w-[18px] h-[18px]">clear_all</mat-icon>
+              {{ i18n.t().clearForm || 'Limpar Formulário' }}
+            </button>
+            <button routerLink="/history" class="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors flex items-center gap-2">
+              <mat-icon class="text-[18px] w-[18px] h-[18px]">history</mat-icon>
+              {{ i18n.t().viewHistory || 'Ver Histórico' }}
+            </button>
+          </div>
+        }
       </div>
 
       <!-- Progress -->
@@ -154,6 +168,7 @@ export class GeneratorComponent {
   });
 
   isLoading = signal(false);
+  isMenuOpen = signal(false);
   activeTab = signal<'short' | 'long'>('short');
   result = signal<GeneratedContent | null>(null);
 
@@ -163,6 +178,14 @@ export class GeneratorComponent {
         this.form.patchValue({ type: params['type'] });
       }
     });
+  }
+
+  clearForm() {
+    this.form.reset({
+      goal: 'Educate & Inform',
+      type: this.form.value.type || 'instagram'
+    });
+    this.result.set(null);
   }
 
   async generateContent() {

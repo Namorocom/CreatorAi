@@ -34,9 +34,9 @@ interface SearchResult {
             <mat-icon>notifications</mat-icon>
             <span class="absolute top-0 right-0 w-2 h-2 bg-purple-500 rounded-full"></span>
           </button>
-          <div class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border-2 border-purple-500/30">
+          <button routerLink="/profile" class="w-10 h-10 rounded-full bg-gray-700 overflow-hidden border-2 border-purple-500/30 hover:border-purple-500 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">
             <img [src]="avatarUrl()" alt="Avatar" referrerpolicy="no-referrer" class="w-full h-full object-cover" />
-          </div>
+          </button>
         </div>
       </div>
 
@@ -95,7 +95,7 @@ interface SearchResult {
 
       <!-- Hero Card -->
       <div class="bg-gradient-to-br from-purple-600 to-purple-900 rounded-2xl p-6 mb-8 relative overflow-hidden shadow-lg shadow-purple-900/20">
-        <div class="absolute right-0 top-0 opacity-20 transform translate-x-1/4 -translate-y-1/4">
+        <div class="absolute right-0 top-0 opacity-20 transform translate-x-1/4 -translate-y-1/4 pointer-events-none">
           <mat-icon style="font-size: 160px; width: 160px; height: 160px;">bolt</mat-icon>
         </div>
         <div class="relative z-10">
@@ -111,7 +111,7 @@ interface SearchResult {
       <!-- Quick Actions -->
       <div class="flex justify-between items-end mb-4">
         <h3 class="text-xl font-semibold">{{ i18n.t().quickActions }}</h3>
-        <button class="text-purple-400 text-sm font-medium hover:text-purple-300 transition-colors">{{ i18n.t().seeAll }}</button>
+        <button routerLink="/generator" class="text-purple-400 text-sm font-medium hover:text-purple-300 transition-colors">{{ i18n.t().seeAll }}</button>
       </div>
 
       <div class="grid grid-cols-2 gap-4 mb-4">
